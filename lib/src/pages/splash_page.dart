@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:app_test/src/custom/constants.dart';
 import 'package:app_test/src/custom/library.dart';
 import 'package:flutter/material.dart';
 
@@ -29,11 +30,17 @@ class _SplashPageState extends State<SplashPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        color: Colors.red,
+        color: Constants.colorBackgroundSplash,
         width: double.infinity,
         height: double.infinity,
         alignment: Alignment.center,
-        child: Text('Flash Page'),
+        child: const Text(
+          "Splash Page",
+          style: TextStyle(
+            fontSize: 50,
+            fontWeight: FontWeight.w800,
+          ),
+        ),
       ),
     );
   }
