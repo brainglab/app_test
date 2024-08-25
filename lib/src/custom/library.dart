@@ -1,3 +1,4 @@
+import 'package:app_test/src/pages/details_page.dart';
 import 'package:app_test/src/pages/home_page.dart';
 import 'package:app_test/src/pages/splash_page.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 enum CustomPage {
   splash,
   home,
+  details,
 }
 
 enum TypeAnimation {
@@ -30,6 +32,10 @@ navigate(BuildContext mContext, CustomPage mPage, {bool finishCurrent = false}) 
 
     case CustomPage.home:
       Navigator.pushAndRemoveUntil(globalContext!, _goPage(const HomePage(), TypeAnimation.transition, 500), (Route<dynamic> route) => false);
+      break;
+
+    case CustomPage.details:
+      Navigator.push(globalContext!, _goPage(const DetailsPage(), TypeAnimation.transition, 500));
       break;
     default:
   }
