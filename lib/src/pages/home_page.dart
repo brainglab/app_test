@@ -1,11 +1,11 @@
 import 'dart:developer';
 
-import 'package:app_test/src/custom/configurations.dart';
 import 'package:app_test/src/custom/constants.dart';
 import 'package:app_test/src/custom/library.dart';
-import 'package:app_test/src/providers/global_provider.dart';
+import 'package:app_test/src/models/country_model.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -16,6 +16,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   String mOnBoarding = "...";
+  Countries mContries = Countries();
 
   @override
   void initState() {
@@ -31,61 +32,135 @@ class _HomePageState extends State<HomePage> {
         log("==> mOnBoarding: $mOnBoarding");
       }
     });
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      FocusScope.of(context).requestFocus(FocusNode());
+      getCountries();
+    });
+  }
+
+  getCountries() async {
+    // Get a reference your Supabase client
+    final mSupabase = Supabase.instance.client;
+    final mResult = await mSupabase.from('countries').select();
+    log("==> mResult: $mResult");
+
+    mContries = Countries.fromJsonList(mResult);
+
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-          color: Constants.colorBackground,
-          width: double.infinity,
-          height: double.infinity,
-          alignment: Alignment.center,
-          child: Column(
-            children: [
-              const SizedBox(height: 100),
-              Text(
-                mOnBoarding,
-                style: const TextStyle(
-                  fontSize: 50,
-                  fontWeight: FontWeight.w800,
-                  color: Colors.red,
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).requestFocus(FocusNode()),
+        child: RefreshIndicator(
+          backgroundColor: Constants.colorAccent,
+          color: Constants.colorLight,
+          strokeWidth: 3,
+          displacement: 80,
+          onRefresh: () async {
+            if (mounted) {
+              globalContext = context;
+              getCountries();
+            }
+          },
+          child: SizedBox(
+            height: double.infinity,
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: SizedBox(
+                child: Column(
+                  children: [
+                    const SizedBox(height: 100),
+                    Text(
+                      "Paises",
+                      style: Constants.textStyleDarkBold,
+                    ),
+                    ListView.builder(
+                        physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemCount: mContries.items.length,
+                        itemBuilder: (context, index) {
+                          return Card(
+                            margin: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
+                            elevation: 1,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            color: Colors.white,
+                            surfaceTintColor: Colors.white,
+                            child: InkWell(
+                              onTap: () => {},
+                              borderRadius: BorderRadius.circular(15),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  SizedBox(
+                                    width: 70,
+                                    height: 70,
+                                    child: Container(
+                                      width: 40,
+                                      height: double.infinity,
+                                      alignment: Alignment.center,
+                                      child: Icon(
+                                        TablerIcons.map_pin,
+                                        color: Constants.colorDark,
+                                        size: 25,
+                                      ),
+                                    ),
+                                  ),
+                                  Flexible(
+                                    child: SizedBox(
+                                      width: double.infinity,
+                                      height: 70,
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            mContries.items[index].mCountryName!,
+                                            style: Constants.textStyleDarkBold,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                          Text(
+                                            "Código ${mContries.items[index].mCountryCode}",
+                                            style: Constants.textStyleGraySmall,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 50,
+                                    height: 70,
+                                    child: Container(
+                                      width: 40,
+                                      height: double.infinity,
+                                      alignment: Alignment.center,
+                                      child: Icon(
+                                        TablerIcons.chevron_right,
+                                        color: Constants.colorDark,
+                                        size: 30,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        }),
+                  ],
                 ),
               ),
-              Text(
-                Consfigurations.mVersion,
-                style: const TextStyle(
-                  fontSize: 50,
-                  fontWeight: FontWeight.w800,
-                  color: Colors.white,
-                ),
-              ),
-              Text(
-                Provider.of<GlobalProvider>(context, listen: false).mToken,
-                style: const TextStyle(
-                  fontSize: 50,
-                  fontWeight: FontWeight.w800,
-                  color: Colors.green,
-                ),
-              ),
-              MaterialButton(
-                onPressed: () {
-                  Provider.of<GlobalProvider>(context, listen: false).mToken = "Ouch!!";
-                  setState(() {});
-                },
-                color: Colors.amber,
-                child: const Text('Click me!'),
-              ),
-              MaterialButton(
-                onPressed: () {
-                  globalContext = context;
-                  navigate(globalContext!, CustomPage.details);
-                },
-                color: const Color.fromARGB(255, 255, 127, 7),
-                child: const Text('Go Details'),
-              ),
-            ],
-          )),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

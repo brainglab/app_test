@@ -39,6 +39,8 @@ dependencies:
   # custom
   shared_preferences: ^2.3.2
   provider: ^6.0.4
+  supabase_flutter: ^2.6.0
+  flutter_tabler_icons: ^1.37.0
 
 
 dev_dependencies:
