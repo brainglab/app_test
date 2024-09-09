@@ -41,6 +41,7 @@ dependencies:
   provider: ^6.0.4
   supabase_flutter: ^2.6.0
   flutter_tabler_icons: ^1.37.0
+  google_fonts: ^6.2.1
 
 
 dev_dependencies:
@@ -82,16 +83,16 @@ flutter:
   # list giving the asset and other descriptors for the font. For
   # example:
   # fonts:
-  #   - family: Schyler
+  #   - family: sora
   #     fonts:
-  #       - asset: fonts/Schyler-Regular.ttf
-  #       - asset: fonts/Schyler-Italic.ttf
-  #         style: italic
-  #   - family: Trajan Pro
-  #     fonts:
-  #       - asset: fonts/TrajanPro.ttf
-  #       - asset: fonts/TrajanPro_Bold.ttf
-  #         weight: 700
-  #
+  #       - asset: assets/fonts/sora/sora_thin.ttf
+  #       - asset: assets/fonts/sora/sora_bold.ttf
+  #       - asset: assets/fonts/sora/sora_extrabold.ttf
+  #       - asset: assets/fonts/sora/sora_extralight.ttf
+  #       - asset: assets/fonts/sora/sora_light.ttf
+  #       - asset: assets/fonts/sora/sora_medium.ttf
+  #       - asset: assets/fonts/sora/sora_regular.ttf
+  #       - asset: assets/fonts/sora/sora_semibold.ttf
+  
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
