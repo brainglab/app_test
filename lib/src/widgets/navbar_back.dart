@@ -27,10 +27,10 @@ class NavbarBack extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
         systemOverlayStyle: SystemUiOverlayStyle(
           // Status bar color
-          statusBarColor: (tinte == Tinte.light ? Constants.colorBackgroundLayout : Constants.colorBackgroundSplash),
+          statusBarColor: (tinte == Tinte.light ? Constants.colorDark : Constants.colorLight),
 
           // Status bar brightness (optional)
-          statusBarIconBrightness: (tinte == Tinte.light ? Brightness.dark : Brightness.light), // For Android (dark icons)
+          statusBarIconBrightness: (tinte == Tinte.light ? Brightness.light : Brightness.dark), // For Android (dark icons)
           statusBarBrightness: (tinte == Tinte.light ? Brightness.light : Brightness.dark), // For iOS (dark icons)
         ),
         surfaceTintColor: (backgroundColor ?? Constants.colorBackgroundLayout),
@@ -41,7 +41,7 @@ class NavbarBack extends StatelessWidget implements PreferredSizeWidget {
           color: (backgroundColor ?? Constants.colorBackgroundLayout),
           child: Text(
             (title == null ? "" : title!),
-            style: (tinte == Tinte.dark ? Constants.textStyleBlackTitle : Constants.textStyleWhiteTitle),
+            style: (tinte == Tinte.light ? Constants.textStyleBlackTitle : Constants.textStyleWhiteTitle),
             textAlign: TextAlign.center,
           ),
         ),
@@ -54,21 +54,13 @@ class NavbarBack extends StatelessWidget implements PreferredSizeWidget {
                 padding: const EdgeInsets.only(right: 3),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(Constants.radius),
-                  color: (tinte == Tinte.light ? Constants.colorWhite : Constants.colorBlack),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.5),
-                      spreadRadius: 1,
-                      blurRadius: 1,
-                      offset: const Offset(0, 3), // changes position of shadow
-                    ),
-                  ],
+                  color: (tinte == Tinte.light ? Constants.colorWhite : Constants.colorDark),
                 ),
                 child: CustomButton(
                   color: Colors.transparent,
                   child: Icon(
                     TablerIcons.chevron_left,
-                    color: (tinte == Tinte.light ? Constants.colorBlack : Constants.colorWhite),
+                    color: (tinte == Tinte.light ? Constants.colorDark : Constants.colorLight),
                     size: 30,
                   ),
                   callback: () {
@@ -85,7 +77,7 @@ class NavbarBack extends StatelessWidget implements PreferredSizeWidget {
                     color: Constants.colorBackgroundLayout,
                     borderRadius: 500,
                     child: Icon(
-                      TablerIcons.heart,
+                      TablerIcons.menu,
                       color: (tinte == Tinte.light ? Constants.colorBlack : Constants.colorWhite),
                       size: 22,
                     ),

@@ -2,9 +2,9 @@ import 'package:app_test/src/custom/constants.dart';
 import 'package:flutter/material.dart';
 
 class CustomButton extends StatefulWidget {
-  const CustomButton({super.key, required this.color, this.borderColor, this.callback, this.height, this.width, this.elevation, this.borderRadius, this.marginTop, this.marginBottom, this.child, this.alignmentChild});
+  const CustomButton({super.key, this.color, this.borderColor, this.callback, this.height, this.width, this.elevation, this.borderRadius, this.marginTop, this.marginBottom, this.child, this.alignmentChild});
 
-  final Color color;
+  final Color? color;
   final Color? borderColor;
   final VoidCallback? callback;
   final double? height;

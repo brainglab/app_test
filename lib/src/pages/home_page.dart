@@ -58,9 +58,10 @@ class _HomePageState extends State<HomePage> {
       appBar: NavbarBack(
         backgroundColor: Constants.colorDark,
         backgroundButtonColor: Constants.colorDark,
-        showBack: true,
-        tinte: Tinte.light,
-        title: "Paises",
+        tinte: Tinte.dark,
+        title: "Países",
+        showBack: false,
+        mListActions: [],
       ),
       body: GestureDetector(
         onTap: () => FocusScope.of(context).requestFocus(FocusNode()),
@@ -97,7 +98,10 @@ class _HomePageState extends State<HomePage> {
                           color: Colors.white,
                           surfaceTintColor: Colors.white,
                           child: InkWell(
-                            onTap: () => {},
+                            onTap: () {
+                              globalContext = context;
+                              navigate(globalContext!, CustomPage.details);
+                            },
                             borderRadius: BorderRadius.circular(15),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -159,19 +163,6 @@ class _HomePageState extends State<HomePage> {
                           ),
                         );
                       },
-                    ),
-                    Container(
-                      margin: const EdgeInsets.only(left: 10, right: 10),
-                      child: CustomButton(
-                        color: Constants.colorAccent,
-                        callback: () {
-//
-                        },
-                        child: Text(
-                          'Click',
-                          style: Constants.textStyleBlackBold,
-                        ),
-                      ),
                     ),
                   ],
                 ),
