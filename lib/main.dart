@@ -1,4 +1,5 @@
 import 'package:app_test/src/custom/configurations.dart';
+import 'package:app_test/src/custom/library.dart';
 import 'package:app_test/src/pages/splash_page.dart';
 import 'package:app_test/src/providers/global_provider.dart';
 import 'package:flutter/material.dart';
@@ -30,6 +31,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Flutter Demo',
+        navigatorObservers: [mRouteObserver],
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,

@@ -3,10 +3,11 @@ import 'dart:developer';
 import 'package:app_test/src/custom/constants.dart';
 import 'package:app_test/src/custom/library.dart';
 import 'package:app_test/src/models/country_model.dart';
-import 'package:app_test/src/widgets/custom_button.dart';
+import 'package:app_test/src/providers/global_provider.dart';
 import 'package:app_test/src/widgets/navbar_back.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
+import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class HomePage extends StatefulWidget {
@@ -16,7 +17,7 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with RouteAware {
   String mOnBoarding = "...";
   Countries mContries = Countries();
 
@@ -37,8 +38,34 @@ class _HomePageState extends State<HomePage> {
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       FocusScope.of(context).requestFocus(FocusNode());
-      getCountries();
+      // getCountries();
     });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    mRouteObserver.subscribe(this, ModalRoute.of(context)!);
+  }
+
+  @override
+  void dispose() {
+    mRouteObserver.unsubscribe(this);
+    super.dispose();
+  }
+
+  @override
+  void didPush() {
+    // Llamado cuando la ruta ha sido empujada y es visible.
+    print('HomePage fue empujada');
+  }
+
+  @override
+  void didPopNext() {
+    // Llamado cuando la ruta superior ha sido extraída
+    // y esta ruta es ahora visible.
+    print('HomePage es ahora visible');
+    getCountries();
   }
 
   getCountries() async {
@@ -100,6 +127,7 @@ class _HomePageState extends State<HomePage> {
                           child: InkWell(
                             onTap: () {
                               globalContext = context;
+                              Provider.of<GlobalProvider>(context, listen: false).mCountry = mContries.items[index];
                               navigate(globalContext!, CustomPage.details);
                             },
                             borderRadius: BorderRadius.circular(15),

@@ -1,10 +1,13 @@
 import 'package:app_test/src/custom/constants.dart';
 import 'package:app_test/src/custom/library.dart';
 import 'package:app_test/src/custom/validation.dart';
+import 'package:app_test/src/providers/global_provider.dart';
 import 'package:app_test/src/widgets/custom_button.dart';
 import 'package:app_test/src/widgets/custom_input.dart';
 import 'package:app_test/src/widgets/navbar_back.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class DetailsPage extends StatefulWidget {
   const DetailsPage({super.key});
@@ -28,6 +31,9 @@ class _DetailsPageState extends State<DetailsPage> {
 
     mCountryNameController = TextEditingController();
     mCountryCodeController = TextEditingController();
+
+    mCountryNameController.text = Provider.of<GlobalProvider>(context, listen: false).mCountry.mCountryName ?? '';
+    mCountryCodeController.text = Provider.of<GlobalProvider>(context, listen: false).mCountry.mCountryCode ?? '';
   }
 
   @override
@@ -37,6 +43,64 @@ class _DetailsPageState extends State<DetailsPage> {
     super.dispose();
   }
 
+  _formValidation() async {
+    String mMessage = "";
+    if (!_formKey.currentState!.validate()) {
+      _clear();
+    } else {
+      // Validate inputs
+      if (mCountryNameController.text.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Por favor, complete todos los campos')),
+        );
+        return;
+      }
+
+      // Get a reference to your Supabase client
+      final supabase = Supabase.instance.client;
+
+      try {
+        // update country into the 'countries' table
+        await supabase.from('countries').update({
+          'country_name': mCountryNameController.text,
+          'country_code': mCountryCodeController.text,
+        }).eq('idx', Provider.of<GlobalProvider>(context, listen: false).mCountry.mIdx!);
+
+        // Show success message
+        globalContext = context;
+        ScaffoldMessenger.of(globalContext!).showSnackBar(
+          const SnackBar(
+            content: Text('País guardado exitosamente'),
+          ),
+        );
+        Navigator.of(globalContext!).pop();
+
+        // Clear the input fields
+        mCountryNameController.clear();
+        mCountryCodeController.clear();
+
+        // Optionally, you can navigate back or refresh the list
+        // Navigator.of(context).pop();
+      } catch (e) {
+        // Show error message if the insertion fails
+        globalContext = context;
+        ScaffoldMessenger.of(globalContext!).showSnackBar(
+          SnackBar(content: Text('Error al guardar el país: $e')),
+        );
+      }
+    }
+
+    if (mMessage.isNotEmpty) {
+      globalContext = context;
+      customShowToast(globalContext!, mMessage);
+      _clear();
+    }
+  }
+
+  _clear() {
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,7 +108,7 @@ class _DetailsPageState extends State<DetailsPage> {
         backgroundColor: Constants.colorDark,
         backgroundButtonColor: Constants.colorDark,
         tinte: Tinte.dark,
-        title: "Detalles",
+        title: "Editar país",
         showBack: true,
         mListActions: [],
       ),
@@ -114,7 +178,7 @@ class _DetailsPageState extends State<DetailsPage> {
                     CustomButton(
                       color: Constants.colorAccent,
                       callback: () async {
-                        // _formValidation();
+                        _formValidation();
                       },
                       child: Text(
                         'Guardar',

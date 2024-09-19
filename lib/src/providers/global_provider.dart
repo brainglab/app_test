@@ -1,11 +1,12 @@
+import 'package:app_test/src/models/country_model.dart';
 import 'package:flutter/material.dart';
 
 class GlobalProvider extends ChangeNotifier {
-  // Token
-  String _mToken = "";
-  String get mToken => _mToken;
-  set mToken(String mToken) {
-    _mToken = mToken;
+  // Country
+  Country _mCountry = Country();
+  Country get mCountry => _mCountry;
+  set mCountry(Country mCountry) {
+    _mCountry = mCountry;
     notifyListeners();
   }
 }

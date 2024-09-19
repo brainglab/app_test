@@ -1,7 +1,9 @@
+import 'package:app_test/src/custom/constants.dart';
 import 'package:app_test/src/pages/details_page.dart';
 import 'package:app_test/src/pages/home_page.dart';
 import 'package:app_test/src/pages/splash_page.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 enum CustomPage {
@@ -19,6 +21,9 @@ enum Preference {
 }
 
 BuildContext? globalContext;
+
+// Register the RouteObserver as a navigation observer.
+final RouteObserver<ModalRoute<void>> mRouteObserver = RouteObserver<ModalRoute<void>>();
 
 navigate(BuildContext mContext, CustomPage mPage, {bool finishCurrent = false}) {
   if (finishCurrent) {
@@ -106,4 +111,19 @@ getOnePreference(Preference mAuxKey) async {
   }
 
   return result;
+}
+
+customShowToast(BuildContext context, String message) {
+  int mTime = (message.length / 3).round();
+  mTime = mTime < 0 ? 1 : mTime;
+
+  Fluttertoast.showToast(
+    msg: message,
+    toastLength: Toast.LENGTH_LONG,
+    gravity: ToastGravity.TOP,
+    timeInSecForIosWeb: mTime,
+    backgroundColor: Constants.colorRed,
+    textColor: Colors.black,
+    fontSize: 14.0,
+  );
 }
