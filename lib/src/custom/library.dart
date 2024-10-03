@@ -1,15 +1,18 @@
 import 'package:app_test/src/custom/constants.dart';
-import 'package:app_test/src/pages/details_page.dart';
+import 'package:app_test/src/pages/form_country_page.dart';
 import 'package:app_test/src/pages/home_page.dart';
 import 'package:app_test/src/pages/splash_page.dart';
+import 'package:app_test/src/widgets/loading.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:loading_indicator/loading_indicator.dart';
+import 'package:overlay_loading_progress/overlay_loading_progress.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 enum CustomPage {
   splash,
   home,
-  details,
+  formCountry,
 }
 
 enum TypeAnimation {
@@ -39,8 +42,8 @@ navigate(BuildContext mContext, CustomPage mPage, {bool finishCurrent = false}) 
       Navigator.pushAndRemoveUntil(globalContext!, _goPage(const HomePage(), TypeAnimation.transition, 500), (Route<dynamic> route) => false);
       break;
 
-    case CustomPage.details:
-      Navigator.push(globalContext!, _goPage(const DetailsPage(), TypeAnimation.transition, 500));
+    case CustomPage.formCountry:
+      Navigator.push(globalContext!, _goPage(const FormCountryPage(), TypeAnimation.transition, 500));
       break;
     default:
   }
@@ -122,8 +125,55 @@ customShowToast(BuildContext context, String message) {
     toastLength: Toast.LENGTH_LONG,
     gravity: ToastGravity.TOP,
     timeInSecForIosWeb: mTime,
-    backgroundColor: Constants.colorRed,
-    textColor: Colors.black,
+    backgroundColor: Constants.colorAccent,
+    textColor: Constants.colorWhite,
     fontSize: 14.0,
   );
+}
+
+progressDialogShow(BuildContext context) {
+  FocusScope.of(context).requestFocus(FocusNode());
+  OverlayLoadingProgress.start(
+    context,
+    barrierDismissible: false,
+    widget: Container(
+      width: MediaQuery.of(context).size.width,
+      margin: const EdgeInsets.only(left: 20, right: 20),
+      child: Container(
+        padding: const EdgeInsets.only(top: 30),
+        margin: const EdgeInsets.only(top: 15),
+        decoration: BoxDecoration(
+          shape: BoxShape.rectangle,
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(15),
+          boxShadow: const [
+            BoxShadow(color: Colors.black, offset: Offset(0, 10), blurRadius: 50),
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              "Consultando...",
+              style: Constants.textStyleBlackBold,
+            ),
+            SizedBox(
+              height: 80,
+              width: double.infinity,
+              child: Loading(
+                mColor: Constants.colorBlack,
+                mIndicator: Indicator.ballBeat,
+                mSize: 5,
+              ),
+            ),
+            const SizedBox(height: 20),
+          ],
+        ),
+      ),
+    ),
+  );
+}
+
+dialogDismiss() {
+  OverlayLoadingProgress.stop();
 }

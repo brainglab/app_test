@@ -4,6 +4,7 @@ import 'package:app_test/src/custom/constants.dart';
 import 'package:app_test/src/custom/library.dart';
 import 'package:app_test/src/models/country_model.dart';
 import 'package:app_test/src/providers/global_provider.dart';
+import 'package:app_test/src/widgets/custom_button.dart';
 import 'package:app_test/src/widgets/navbar_back.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
@@ -38,7 +39,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       FocusScope.of(context).requestFocus(FocusNode());
-      // getCountries();
+      getCountries();
     });
   }
 
@@ -57,21 +58,25 @@ class _HomePageState extends State<HomePage> with RouteAware {
   @override
   void didPush() {
     // Llamado cuando la ruta ha sido empujada y es visible.
-    print('HomePage fue empujada');
+    log('==> HomePage fue empujada');
   }
 
   @override
   void didPopNext() {
     // Llamado cuando la ruta superior ha sido extraída
     // y esta ruta es ahora visible.
-    print('HomePage es ahora visible');
+    log('==> HomePage es ahora visible');
     getCountries();
   }
 
   getCountries() async {
     // Get a reference your Supabase client
     final mSupabase = Supabase.instance.client;
+
+    progressDialogShow(globalContext!);
     final mResult = await mSupabase.from('countries').select();
+    dialogDismiss();
+
     log("==> mResult: $mResult");
 
     mContries = Countries.fromJsonList(mResult);
@@ -88,7 +93,22 @@ class _HomePageState extends State<HomePage> with RouteAware {
         tinte: Tinte.dark,
         title: "Países",
         showBack: false,
-        mListActions: [],
+        mListActions: [
+          CustomButton(
+            color: Colors.transparent,
+            width: 50,
+            callback: () async {
+              globalContext = context;
+              Provider.of<GlobalProvider>(context, listen: false).mCountry = Country();
+              navigate(globalContext!, CustomPage.formCountry);
+            },
+            child: Icon(
+              TablerIcons.plus,
+              color: Constants.colorAccent,
+              size: 25,
+            ),
+          )
+        ],
       ),
       body: GestureDetector(
         onTap: () => FocusScope.of(context).requestFocus(FocusNode()),
@@ -111,87 +131,97 @@ class _HomePageState extends State<HomePage> with RouteAware {
                 child: Column(
                   children: [
                     const SizedBox(height: 20),
-                    ListView.builder(
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: mContries.items.length,
-                      itemBuilder: (context, index) {
-                        return Card(
-                          margin: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
-                          elevation: 1,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          color: Colors.white,
-                          surfaceTintColor: Colors.white,
-                          child: InkWell(
-                            onTap: () {
-                              globalContext = context;
-                              Provider.of<GlobalProvider>(context, listen: false).mCountry = mContries.items[index];
-                              navigate(globalContext!, CustomPage.details);
-                            },
-                            borderRadius: BorderRadius.circular(15),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                SizedBox(
-                                  width: 70,
-                                  height: 70,
-                                  child: Container(
-                                    width: 40,
-                                    height: double.infinity,
-                                    alignment: Alignment.center,
-                                    child: Icon(
-                                      TablerIcons.map_pin,
-                                      color: Constants.colorDark,
-                                      size: 25,
-                                    ),
-                                  ),
-                                ),
-                                Flexible(
-                                  child: SizedBox(
-                                    width: double.infinity,
-                                    height: 70,
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          mContries.items[index].mCountryName!,
-                                          style: Constants.textStyleBlackBold,
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                        Text(
-                                          "Código ${mContries.items[index].mCountryCode}",
-                                          style: Constants.textStyleGraySmall,
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: 50,
-                                  height: 70,
-                                  child: Container(
-                                    width: 40,
-                                    height: double.infinity,
-                                    alignment: Alignment.center,
-                                    child: Icon(
-                                      TablerIcons.chevron_right,
-                                      color: Constants.colorDark,
-                                      size: 30,
-                                    ),
-                                  ),
-                                ),
-                              ],
+                    mContries.items.isEmpty
+                        ? Container(
+                            margin: const EdgeInsets.only(top: 20, left: 20, right: 20),
+                            width: double.infinity,
+                            child: Text(
+                              "No hay registros para mostrar",
+                              style: Constants.textStyleGrayBold,
+                              textAlign: TextAlign.center,
                             ),
+                          )
+                        : ListView.builder(
+                            physics: const NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            itemCount: mContries.items.length,
+                            itemBuilder: (context, index) {
+                              return Card(
+                                margin: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
+                                elevation: 1,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                color: Colors.white,
+                                surfaceTintColor: Colors.white,
+                                child: InkWell(
+                                  onTap: () {
+                                    globalContext = context;
+                                    Provider.of<GlobalProvider>(context, listen: false).mCountry = mContries.items[index];
+                                    navigate(globalContext!, CustomPage.formCountry);
+                                  },
+                                  borderRadius: BorderRadius.circular(15),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      SizedBox(
+                                        width: 70,
+                                        height: 70,
+                                        child: Container(
+                                          width: 40,
+                                          height: double.infinity,
+                                          alignment: Alignment.center,
+                                          child: Icon(
+                                            TablerIcons.map_pin,
+                                            color: Constants.colorDark,
+                                            size: 25,
+                                          ),
+                                        ),
+                                      ),
+                                      Flexible(
+                                        child: SizedBox(
+                                          width: double.infinity,
+                                          height: 70,
+                                          child: Column(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                mContries.items[index].mCountryName!,
+                                                style: Constants.textStyleBlackBold,
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                              Text(
+                                                "Código ${mContries.items[index].mCountryCode}",
+                                                style: Constants.textStyleGraySmall,
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 50,
+                                        height: 70,
+                                        child: Container(
+                                          width: 40,
+                                          height: double.infinity,
+                                          alignment: Alignment.center,
+                                          child: Icon(
+                                            TablerIcons.chevron_right,
+                                            color: Constants.colorDark,
+                                            size: 30,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
                           ),
-                        );
-                      },
-                    ),
                   ],
                 ),
               ),
